@@ -94,6 +94,6 @@ spec:
 	echo "I am executing Smoke Test on target dev environment post deployment"
 	echo 'Work in progress'
 	}
-	} */
+	} /*/
 }
 }
