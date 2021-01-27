@@ -110,5 +110,15 @@ spec:
       }
 
     } 
+    
+    stage ('Smoke Test')
+    {
+    steps {
+        echo 'Checking Worksoft status'
+	echo ' Executing Smoke test '
+	exho ' Smoke test status'
+	}
+     }
+	
 }
 }
