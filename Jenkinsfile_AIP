@@ -90,7 +90,7 @@ spec:
         echo 'tomcat server stopped'
       }
     } */
-    stage ('Deploy_ESB') {
+    /* stage ('Deploy_ESB') {
       steps {
         echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
 	
@@ -100,7 +100,7 @@ spec:
         sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' */
         echo 'Deployment has been completed'
       }
-    }
+    } */
    /* stage ('Start_ESB') {
       steps {
         echo 'starting the tomcat ESB server'
