@@ -116,8 +116,8 @@ spec:
     steps {
         echo 'Checking Worksoft status'
 	
-	echo ' Executing Smoke test '
-	echo ' Smoke test status'
+	echo 'Executing Smoke test '
+	echo 'Smoke test status'
 	}
      }
      
