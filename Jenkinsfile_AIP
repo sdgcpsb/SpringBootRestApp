@@ -40,25 +40,37 @@ spec:
 					}
 				}
 			}
-			stage('check_build_version'){
+			stage('copy_environment_properties'){
 			       steps {
 			                  container('gradle') {
-			                       /* $versionLine = (Get-Content build.gradle) -match "version\s*=\s*'\s*(\d+)\.(\d)+"
-                                                 "$versionLine" -match "version\s*=\s*'\s*(\d+)\.(\d)+"
-                                                  $major = $matches[1]
-                                                  $minor = $matches[2]
-                                                  $gitStatus = (git status) -match "On branch"
-                                                 "$gitStatus" -match "On branch\s*(\w+)"
-                                                  $branch = $matches[1]
+			                       /* mkdir properties
+                                                 cp -r SterlingESBAux/properties/dev1 properties/
+                                                 cp -r SterlingESBAux/properties/uat1 properties/
+                                                 cp -r SterlingESBAux/properties/perf1 properties/
+                                                 cp -r SterlingESBAux/properties/perf2 properties/
+                                                 cp -r SterlingESBAux/properties/prod1 properties/
+                                                 cp -r SterlingESBAux/properties/prod2 properties/
 
-                                                  $tag = "$branch-${bamboo.planKey}-$major.$minor.${bamboo.buildNumber}${bamboo.repository.branch.name}"
-
-                                                  git tag "$tag"
-                                                  git remote add origin http://${bamboo.git.user}:${bamboo.git.password}@${bamboo.git.url}
-                                                  git push origin "$tag" */
+                                                 ls -la properties
+                                                      */
 						  }
 				         }
 			}
+			stage('check_sonar_plugin'){
+			       steps {
+			                  container('gradle') {
+			                       /* grep -q "org.sonarqube" build.gradle
+					       if [ $? -gt 0 ]; then
+					       sed -i '' '/register plug-ins/ {a\
+					       plugins {id "org.sonarqube" version "3.0"}
+					       }' build.gradle
+                                               Fi
+					       */
+						  }
+				         }
+			}
+			
+			
 
 			 stage('Unit Test') {
 				steps {
