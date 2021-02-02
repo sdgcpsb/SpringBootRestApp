@@ -59,7 +59,34 @@ spec:
 			}
 		}
 	
-	 stage('Publish Package') {
+	 stage('Parallel In Sequential') {
+                    parallel {
+                        stage('Publish') {
+			script {
+                  propfile = readProperties(file: './project.properties')
+		   println ("deploy:"+ propfile['feature_deploy'])
+               println ("reading properties ...")
+	 if ( propfile['feature_deploy'] == "true" || ${env.BRANCH_NAME} == 'dev' || ${env.BRANCH_NAME} == 'release' ) {
+                            
+                                echo "In Parallel 1"
+                            }
+                        }
+			}
+		
+                        stage('In Parallel 2') {
+                            steps {
+                                echo "In Parallel 2"
+				container('gradle') {
+				withMaven(maven: 'MAVEN-3.6.3') {
+					echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
+					sh 'mvn -X deploy:deploy-file -Dfile=sample-java-app/target/sample-env.build.number-env.branch_name-env.timestamp-SNAPSHOT.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+				}
+			}
+                            }
+                        }
+                    }
+                }
+	 /* stage('Publish Package') {
 	script {
                   propfile = readProperties(file: './project.properties')
 		   println ("deploy:"+ propfile['feature_deploy'])
@@ -75,7 +102,7 @@ spec:
 		}
 	} 
 	}
-	} 
+	} */
 	
 	stage ("Deploy") {
               steps {
