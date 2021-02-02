@@ -71,7 +71,7 @@ spec:
                   propfile = readProperties(file: './project.properties')
 		   println ("deploy:"+ propfile['feature_deploy'])
                println ("reading properties ...")
-	 if ( propfile['feature_deploy'] == "true" || ${env.BRANCH_NAME} == 'dev' || ${env.BRANCH_NAME} == 'release' ) {
+	 if ( propfile['feature_deploy'] == "true" || {env.BRANCH_NAME} == 'dev' || {env.BRANCH_NAME} == 'release' ) {
 		
 			container('gradle') {
 				withMaven(maven: 'MAVEN-3.6.3') {
