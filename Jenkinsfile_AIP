@@ -52,19 +52,19 @@ spec:
 					}
 				}
 				
-                  sh "printenv | sort"
+                 /* sh "printenv | sort"
                   echo "BUILD_NUMBER = ${env.BUILD_NUMBER}"
-                  echo "BRANCH_NAME = ${env.BRANCH_NAME}"
+                  echo "BRANCH_NAME = ${env.BRANCH_NAME}" */
               
 			}
 		}
 	
-	/* stage('Publish Package') {
+	 stage('Publish Package') {
 	script {
                   propfile = readProperties(file: './project.properties')
 		   println ("deploy:"+ propfile['feature_deploy'])
                println ("reading properties ...")
-	 if ( propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release' ) {
+	 if ( propfile['feature_deploy'] == "true" || ${env.BRANCH_NAME} == 'dev' || ${env.BRANCH_NAME} == 'release' ) {
 		steps {
 			container('gradle') {
 				withMaven(maven: 'MAVEN-3.6.3') {
@@ -75,7 +75,7 @@ spec:
 		}
 	} 
 	}
-	} */
+	} 
 	
 	stage ("Deploy") {
               steps {
