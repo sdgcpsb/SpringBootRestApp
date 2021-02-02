@@ -54,7 +54,7 @@ spec:
 			}
 		}
 	
-	stage('Publish Package') {
+	/* stage('Publish Package') {
 	script {
                   propfile = readProperties(file: './project.properties')
 		   println ("deploy:"+ propfile['feature_deploy'])
@@ -68,7 +68,7 @@ spec:
 				}
 			}
 		}
-	}
+	} */
 	}
 	}
 	
