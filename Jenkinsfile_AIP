@@ -72,7 +72,7 @@ spec:
 	}
 	}
 	
-	stage ("Deploy") {
+	/*   stage ("Deploy") {
               steps {
                   container ('gradle') {
                 script {
@@ -126,6 +126,6 @@ spec:
     steps {
     echo 'smoke test'
     }
-    }
+    } */
 }
 }
