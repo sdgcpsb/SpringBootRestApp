@@ -1,4 +1,4 @@
-package com.kkjavatutorials.SpringBootRestApp;
+/* package com.kkjavatutorials.SpringBootRestApp;
 
 
 import org.junit.Test;
