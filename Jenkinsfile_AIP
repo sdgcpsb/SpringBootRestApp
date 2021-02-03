@@ -28,8 +28,9 @@ spec:
 					container('gradle') {
 						
 								echo 'I am executing unit test'
-								
+								sh '''
 								./gradlew clean build
+								'''
 								
 							}
 						}
