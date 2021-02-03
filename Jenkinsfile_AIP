@@ -26,8 +26,7 @@ spec:
 			stage('Unit Test') {
 				steps {
 					container('gradle') {
-						withMaven(maven: 'MAVEN-3.6.3') {
-							withSonarQubeEnv(installationName: 'Sonarqube') {
+						
 								echo 'I am executing unit test'
 								//sh "ls -la ${pwd()}"
 								sh './gradlew run'
@@ -35,8 +34,7 @@ spec:
 							}
 						}
 					}
-				}
-			}
+			
 		
 		
 	
