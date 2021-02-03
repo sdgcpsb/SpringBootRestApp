@@ -34,7 +34,7 @@ stages {
 				}
 			}
 		}
-	}
+}
 	stage('Code Quality') {
 		steps {
 			container('gradle') {
