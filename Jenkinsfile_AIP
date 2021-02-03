@@ -71,7 +71,7 @@ stages {
 							sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true */
 							sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
 							sh 'ls -lrt sample-java-app/target/'
-							curl -H "Authorization: Token archiva_creds" https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar
+							curl -H "Authorization:archiva_creds" https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar
 							//sh 'mvn -X deploy:deploy-file  -Dfile= /home/gradle/.m2/repository/io/buildpacks/example/sample/0.0.1-SNAPSHOT/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 							echo "noooooooooooooooooo"
 						}
