@@ -29,6 +29,7 @@ spec:
 						
 								echo 'I am executing unit test'
 								sh '''
+								chmod 777 *
 								./gradlew clean build
 								'''
 								
