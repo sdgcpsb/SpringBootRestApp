@@ -46,7 +46,7 @@ spec:
 						//sh 'mvn -f sample-java-app/pom.xml sonar:sonar'
 						sh '''
 						
-						gradle Sonarqube  Dsonar.login='sonar_creds' -Dsonar.host.url=https://sonarqube.sgn.devops.accentureanalytics.com/projects -Dsonar.verbose=true
+						./gradlew Sonarqube  Dsonar.login='sonar_creds' -Dsonar.host.url=https://sonarqube.sgn.devops.accentureanalytics.com/projects -Dsonar.verbose=true
 						'''
 					}
 					 /*sleep(60)
