@@ -30,6 +30,7 @@ stages {
 						echo 'I am executing unit test'
 						// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
 						sh 'mvn -f sample-java-app/pom.xml clean package'
+						sh 'mvn -X javadoc:javadoc -o'
 					}
 				}
 			}
@@ -43,13 +44,10 @@ stages {
 						echo 'I am executing code quality using sonarqube'
 						sh 'mvn -f sample-java-app/pom.xml sonar:sonar'
 					}
-					sleep(60)
+					 sleep(60)
 					timeout(time: 1, unit: 'MINUTES') {
 					waitForQualityGate abortPipeline: true
 					} 
-					
-					 
-					
 				}
 			}
 		}
@@ -71,7 +69,7 @@ stages {
 							sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true */
 							sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
 							sh 'ls -lrt sample-java-app/target/'
-                                                        sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+							sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 							echo "noooooooooooooooooo"
 						}
 					}
@@ -111,7 +109,7 @@ stages {
 				}
 			}
 		}
-        }
+}
 	
 	stage('Post Deploy Tests') {
 		parallel {
@@ -178,5 +176,8 @@ stages {
 	success {
 		echo 'I am sending a notification with success'
 	}
+	/* always {
+		javadoc: Publish Javadoc
+	} */
    }
 }
