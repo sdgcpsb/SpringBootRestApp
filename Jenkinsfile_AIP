@@ -30,9 +30,10 @@ spec:
 								echo 'I am executing unit test'
 								sh '''
 								chmod 777 *
+								 rm -rf ~/.gradle/caches/
 								./gradlew --no-daemon clean
 								./gradlew --no-daemon build
-								./gradlew sonarqube
+								
 
 
 							
