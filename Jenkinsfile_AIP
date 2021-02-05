@@ -187,7 +187,8 @@ stages {
   }
   post {
   	always {
-		javadoc(javadocDir: '/home/jenkins/agent/workspace/Sandbox/EJB_test/target/site/apidocs', keepAll: true)
+		//javadoc(javadocDir: '/home/jenkins/agent/workspace/Sandbox/EJB_test/target/site/apidocs', keepAll: true)
+		javadoc(javadocDir: '/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs', keepAll: true)
 	}
         failure {
             /*mail bcc: '', 
