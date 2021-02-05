@@ -32,6 +32,14 @@ spec:
 								chmod 777 *
 								./gradlew --no-daemon clean
 								./gradlew --no-daemon build
+								grep -q "org.sonarqube" build.gradle
+								if [ $? -gt 0 ]; then
+								sed -i '' '/register plug-ins/ {a\
+								plugins {id "org.sonarqube" version "8.5.1.38104"}
+								}' build.gradle
+								fi
+
+
 							
 								'''
 								
