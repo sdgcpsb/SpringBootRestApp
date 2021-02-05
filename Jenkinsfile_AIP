@@ -196,7 +196,7 @@ stages {
   	always {
 		script {
 			propfile = readProperties(file: './project.properties')
-			if (propfile['feature_deploy'] == "true") {
+			if (propfile['javadoc'] == "true") {
 				javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
 			}
 		}
