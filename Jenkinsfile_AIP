@@ -23,40 +23,23 @@ spec:
   
     stages {
 			
-			/* stage('Unit Test') {
+			stage('Unit Test') {
 				steps {
 					container('gradle') {
 						
 								echo 'I am executing unit test'
 								sh '''
 								chmod 777 *
-								./gradlew clean build
+								--no-daemon clean
+								--no-daemon build
+							//	./gradlew clean build
 								'''
 								
 							}
 						}
-					} */
+					} 
 					
-					stage('Code Quality') {
-		steps {
-			container('gradle') {
-				
-					withSonarQubeEnv(installationName: 'Sonarqube') {
-						echo 'I am executing code quality using sonarqube'
-						//sh 'mvn -f sample-java-app/pom.xml sonar:sonar'
-						sh '''
-						./gradlew --gradle-version 6.8.1
-						gradle Sonarqube  Dsonar.login='sonar_creds' -Dsonar.host.url=https://sonarqube.sgn.devops.accentureanalytics.com/projects -Dsonar.verbose=true
-						'''
-					}
-					 /*sleep(60)
-					timeout(time: 1, unit: 'MINUTES') {
-					waitForQualityGate abortPipeline: true
-					} */
-				
-			}
-		}
-	}
+		
 			
 		
 		
