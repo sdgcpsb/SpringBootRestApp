@@ -30,8 +30,8 @@ spec:
 								echo 'I am executing unit test'
 								sh '''
 								chmod 777 *
-								--no-daemon clean
-								--no-daemon build
+								./gradlew --no-daemon clean
+								./gradlew --no-daemon build
 							//	./gradlew clean build
 								'''
 								
