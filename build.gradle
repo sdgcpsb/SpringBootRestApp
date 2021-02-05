@@ -2,8 +2,11 @@ plugins {
 	 id 'org.springframework.boot' version '2.3.2.RELEASE'
 	 id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'java'
+	id "org.sonarqube" version "8.5.1.38104"
 	
 }
+
+
 
 group = 'com.kkjavatutorials'
 version = '0.0.1-SNAPSHOT'
