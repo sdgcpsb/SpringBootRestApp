@@ -25,19 +25,26 @@ stages {
 	stage('Build & Unit Test') {
 		steps {
 			container('gradle') {
-				withMaven(maven: 'MAVEN-3.6.3') {
-					withSonarQubeEnv(installationName: 'Sonarqube') {
-						echo 'I am executing unit test'
-						// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
-						sh 'mvn -f sample-java-app/pom.xml clean package'
-						sh 'mvn javadoc:aggregate'
-						jacoco( 
-						      execPattern: '**/*.exec',
-						      classPattern: '**/*.class',
-						      sourcePattern: '**/*.java',
-						      exclusionPattern: '**/test*'
-						)
-					}
+				script {
+					withMaven(maven: 'MAVEN-3.6.3') {
+						withSonarQubeEnv(installationName: 'Sonarqube') {
+							echo 'I am executing unit test'
+							// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
+							sh 'mvn -f sample-java-app/pom.xml clean package'
+							propfile = readProperties(file: './project.properties')
+							if (propfile['javadoc'] == "true") {
+								sh 'mvn javadoc:aggregate'
+							}
+							if (propfile['jacoco'] == "true") {
+								jacoco( 
+									execPattern: '**/*.exec',
+								        classPattern: '**/*.class',
+								        sourcePattern: '**/*.java',
+								        exclusionPattern: '**/test*'
+								)
+							}
+						}
+					}	
 				}
 			}
 		}
@@ -187,7 +194,10 @@ stages {
   }
   post {
   	always {
-		javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
+		propfile = readProperties(file: './project.properties')
+		if (propfile['feature_deploy'] == "true") {
+			javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
+		}
 	}
         failure {
             /*mail bcc: '', 
