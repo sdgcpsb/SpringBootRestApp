@@ -35,7 +35,7 @@ spec:
 								grep -q "org.sonarqube" build.gradle
 								if [ $? -gt 0 ]; then
 								sed -i '' '/register plug-ins/ {a\
-								plugins {id "org.sonarqube" "}
+								plugins {id "org.sonarqube" }
 								}' build.gradle
 								fi
 
