@@ -142,7 +142,8 @@ stages {
 			}
 		}
 	}
-	
+}
+
 	stage('Post Deploy Tests') {
 		parallel {
 			stage('Smoke Test') {
@@ -194,14 +195,14 @@ stages {
   }
   post {
   	always {
-		script {
-			propfile = readProperties(file: './project.properties')
-			if (propfile['javadoc'] == "true") {
-				javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
-			}
-		}
-	}
-        failure {
+		  script {
+        propfile = readProperties(file: './project.properties')
+        if (propfile['javadoc'] == "true") {
+          javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
+        }
+		  }
+	  }
+    failure {
             /*mail bcc: '', 
             	 body: "<b>Example</b><br>\n<br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", 
             	 cc: '', 
@@ -211,10 +212,10 @@ stages {
             	 replyTo: '', 
             	 subject: "ERROR CI: Project name -> ${env.JOB_NAME}", 
             	 to: "foo@foomail.com";*/
-		echo 'I am sending a notification with failure'
-        }
-	success {
-		echo 'I am sending a notification with success'
-	}
-   }
+		            echo 'I am sending a notification with failure'
+    }
+	  success {
+		  echo 'I am sending a notification with success'
+	  }
+  }
 }
