@@ -41,8 +41,8 @@ stages {
 				withMaven(maven: 'MAVEN-3.6.3') {
 					withSonarQubeEnv(installationName: 'Sonarqube') {
 						echo 'I am executing code quality using sonarqube'
-						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_sample_testingg -Dsonar.projectKey=ESB_sample  -Dsonar.profile="ESB" sonar:sonar'
-						// mvn ... -Dsonar.profile="Your profile name" -Dsonar.branch=YOUR BRANCH
+						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_sample_testingg -Dsonar.projectKey=ESB_sample  sonar:sonar'
+						
 					}
 					 sleep(60)
 					timeout(time: 1, unit: 'MINUTES') {
