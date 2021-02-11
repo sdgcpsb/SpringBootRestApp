@@ -34,26 +34,15 @@ spec:
 		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
 		REQUESTID='779'
 		STAGE_NAME='dev3'
-		//These seems to be a problem when declaring URI in env, results in WorkflowScript: 37: you tried to assign a value to the class 'java.net.URI'
-		//URI='http://pwwsftapp01/executionmanager/api'
+		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
+		USERNAME_FEATURE_DEPLOY='muleadmin'
+		HOSTS_FEATURE_DEPLOY='10.6.74.90'
+		USERNAME_DEV_DEPLOY='muleadmin'
+		HOSTS_DEV_DEPLOY='10.6.74.91'
+		USERNAME_RELEASE='muleadmin'
+		HOSTS_RELEASE_DEPLOY="'10.6.74.92' '10.6.74.93'"
 	}
-	//All of these lines need to be within a script step (stages>stage>steps>script) in order to work
-	//If we include javadoc and jacoco flags in jenkinsfile it takes care of the propfile variable initialization 
-	//We just need to work out were to insert the deploy info
-	/*propfile = readProperties(file: './project.properties')
-	if (propfile['feature_deploy'] == "true" ) {
-		USERNAME='muleadmin'
-		HOSTS='10.6.74.90'
-	}
-	if (env.BRANCH_NAME == 'dev' ) {
-		USERNAME='muleadmin'
-		HOSTS='10.6.74.91'
-	}
-	if (env.BRANCH_NAME == 'release') {
-		USERNAME='muleadmin'
-		HOSTS="'10.6.74.92' '10.6.74.93'"
-	}*/
 	stages {
 		stage('Build & Unit Test') {
 			steps {
@@ -132,27 +121,41 @@ spec:
 					script {
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
-								//Need to add info and initialize to be able to use these lines
-								/*for HOSTNAME in ${HOSTS} ; do
+								if (propfile['feature_deploy'] == "true" ) {
+									USERNAME=$USERNAME_FEATURE_DEPLOY
+									HOSTS=$HOST_FEATURE_DEPLOY
+								}
+								if (env.BRANCH_NAME == 'dev' ) {
+									USERNAME=$USERNAME_DEV_DEPLOY
+									HOSTS=$HOST_DEV_DEPLOY
+								}
+								if (env.BRANCH_NAME == 'release') {
+									USERNAME=$USERNAME_RELEASE_DEPLOY
+									HOSTS=$HOST_RELEASE_DEPLOY
+								}
+								for HOSTNAME in ${HOSTS} ; do
 								$DEPOYMENT_SERVER=$HOSTNAME
 								$DEPLOYMENT_USER=$USERNAME
-								echo "I am deploying the artifact into the target environment $HOSTNAME"*/
+								echo "I am deploying the artifact into the target environment $HOSTNAME"
 								echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
 								echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
 								echo 'shutting down the tomcat ESB server'
 								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH stop || sleep 20"'
 								echo 'force stop any remaining mule process'
-								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' */
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' 
+								*/
 								echo 'tomcat server stopped'
 								echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
 								/* sh 'scp -rp $WORKSPACE/artifacts/artifact.tar $DEPLOYMENT_USER@$DEPOYMENT_SERVER:$DEPLOYMENT_STAGE_DIR/'
 								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && rm -rf *.war *.jar"'
 								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && tar -xvzf artifact.tar && rm -rf *.jar"'
-								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' */
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' 
+								*/
 								echo 'Deployment has been completed'
 								echo 'starting the tomcat ESB server'
 								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
-								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' */
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
+								*/
 								echo 'tomcat server started'
 							}
 						} else {
