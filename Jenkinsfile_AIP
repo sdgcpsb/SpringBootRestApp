@@ -32,10 +32,10 @@ spec:
 		WAR_FILES='AlertESB.war FraudESB.war TaxESB.war PaymentESB.war FulfillmentESB.war ESBAuditLog.war ESBAutomatedQueueRetry.war OrderReconESB.war'
 		ESB_BIN_PATH='/opt/mule/bin/esb_service'
 		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
-		REQUESTID=779
-		STAGE_NAME=dev3
-		URI=http://pwwsftapp01/executionmanager/api
-		USERNAME=devopsengineering@signetjewelers.com
+		REQUESTID='779'
+		STAGE_NAME='dev3'
+		URI='http://pwwsftapp01/executionmanager/api'
+		USERNAME='devopsengineering@signetjewelers.com'
 	}
 	propfile = readProperties(file: './project.properties')
 	if (propfile['feature_deploy'] == "true" ) {
