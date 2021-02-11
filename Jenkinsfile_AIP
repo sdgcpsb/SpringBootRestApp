@@ -129,7 +129,7 @@ pipeline {
 				}
 			}
 		}
-	}
+	
 	stage('Post Deploy Tests') {
 		parallel {
 			stage('Smoke Test') {
@@ -204,3 +204,4 @@ pipeline {
 		  	echo 'I am sending a notification with success'
 	  	}
   	}
+}
