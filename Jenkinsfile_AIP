@@ -116,6 +116,8 @@ stages {
 							echo 'starting the tomcat ESB server'
 							/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
 							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' */
+							
+							echo " The below commands will work only when we access to original repo"
 							/* deploy the WAR files on each UAT server
 							USERNAME=$bamboo_deployment_user
 							HOSTS="$bamboo_UAT_host1 $bamboo_UAT_host2"
