@@ -1,138 +1,135 @@
 def CONF = readProperties file: './project.properties'
 
 pipeline {
-     
-  agent {
-    kubernetes {
-      label 'SpringBootRestApp'
-      defaultContainer 'jnlp'
-      yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-labels:
-  component: ci
-spec:
-  containers:
-  - name: gradle
-    image: gradle:3.5-jdk8-alpine
-    command:
-    - cat
-    tty: true
-"""
-}
-    }
-  
-stages {
-	stage('Build & Unit Test') {
-		steps {
-			container('gradle') {
-				script {
+	agent {
+    		kubernetes {
+			label 'SpringBootRestApp'
+			defaultContainer 'jnlp'
+			yaml """
+				apiVersion: v1
+				kind: Pod
+				metadata:
+				labels:
+				  component: ci
+				spec:
+				  containers:
+				  - name: gradle
+				    image: gradle:3.5-jdk8-alpine
+				    command:
+				    - cat
+				    tty: true
+			"""
+		}
+	}
+	stages {
+		stage('Build & Unit Test') {
+			steps {
+				container('gradle') {
+					script {
+						withMaven(maven: 'MAVEN-3.6.3') {
+							echo 'I am executing build and unit test'
+							echo 'use the command below when we switch to EJB source'
+							// sh 'gradle --no-daemon clean build'
+							echo 'Add gradle clean and build for EJB and comment this step' 
+							sh 'mvn -f sample-java-app/pom.xml clean package'
+							//propfile = readProperties(file: './project.properties')
+							if (CONF['javadoc'] == "true") {
+								sh 'mvn javadoc:aggregate'
+							}
+							if (CONF['jacoco'] == "true") {
+								jacoco( 
+									execPattern: '**/*.exec',
+									classPattern: '**/*.class',
+									sourcePattern: '**/*.java',
+									exclusionPattern: '**/test*'
+								)
+							}
+						}	
+					}
+				}
+			}
+		}
+		stage('Code Quality') {
+			steps {
+				container('gradle') {
 					withMaven(maven: 'MAVEN-3.6.3') {
-						echo 'I am executing build and unit test'
-						echo 'use the command below when we switch to EJB source'
-						// sh 'gradle --no-daemon clean build'
-						echo 'Add gradle clean and build for EJB and comment this step' 
-						sh 'mvn -f sample-java-app/pom.xml clean package'
-						//propfile = readProperties(file: './project.properties')
-						if (CONF['javadoc'] == "true") {
-							sh 'mvn javadoc:aggregate'
+						withSonarQubeEnv(installationName: 'Sonarqube') {
+							echo 'I am executing code quality using sonarqube'
+							echo "Change the line below when we switch to the actual EJB repo"
+							// sh 'gradle SonarQube'
+							echo 'Remove the line below when we switch to the actual EJB repo'
+							sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
 						}
-						if (CONF['jacoco'] == "true") {
-							jacoco( 
-								execPattern: '**/*.exec',
-								classPattern: '**/*.class',
-								sourcePattern: '**/*.java',
-								exclusionPattern: '**/test*'
-							)
-						}
-					}	
-				}
-			}
-		}
-	}
-	stage('Code Quality') {
-		steps {
-			container('gradle') {
-				withMaven(maven: 'MAVEN-3.6.3') {
-					withSonarQubeEnv(installationName: 'Sonarqube') {
-						echo 'I am executing code quality using sonarqube'
-						echo "Change the line below when we switch to the actual EJB repo"
-						// sh 'gradle SonarQube'
-						echo 'Remove the line below when we switch to the actual EJB repo'
-						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
+						sleep(60)
+						timeout(time: 1, unit: 'MINUTES') {
+						waitForQualityGate abortPipeline: true
+						} 
 					}
-					sleep(60)
-					timeout(time: 1, unit: 'MINUTES') {
-					waitForQualityGate abortPipeline: true
-					} 
 				}
 			}
 		}
-	}
-	stage("Publish Package") {
-		steps {
-			container('gradle') {
-				script {
-					propfile = readProperties(file: './project.properties')
-					println("deploy:" + propfile['feature_deploy'])
-					if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-						withMaven(maven: 'MAVEN-3.6.3') {
-							echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
-							echo 'Replace the next 4 lines to reflect the EJB artifact and push it to archiva'
-							echo 'Use the 5 lines below when we switch to the actual EJB repo' 
-							/* echo 'copying the jar and war files from the individual target directories and copying it to artifacts directory '
-							sh "mkdir -p $WORKSPACE/artifacts"
-							sh 'cp /dist/libs/* $WORKSPACE/artifacts/' 
-							echo 'create a tar file on the Jenkins server'
-							sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
-							*/
-							echo 'Remove the 3 lines below when we switch to the actual EJB repo'
-							sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
-							sh 'ls -lrt sample-java-app/target/'
-							sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+		stage("Publish Package") {
+			steps {
+				container('gradle') {
+					script {
+						propfile = readProperties(file: './project.properties')
+						println("deploy:" + propfile['feature_deploy'])
+						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
+							withMaven(maven: 'MAVEN-3.6.3') {
+								echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
+								echo 'Replace the next 4 lines to reflect the EJB artifact and push it to archiva'
+								echo 'Use the 5 lines below when we switch to the actual EJB repo' 
+								/* echo 'copying the jar and war files from the individual target directories and copying it to artifacts directory '
+								sh "mkdir -p $WORKSPACE/artifacts"
+								sh 'cp /dist/libs/* $WORKSPACE/artifacts/' 
+								echo 'create a tar file on the Jenkins server'
+								sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
+								*/
+								echo 'Remove the 3 lines below when we switch to the actual EJB repo'
+								sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
+								sh 'ls -lrt sample-java-app/target/'
+								sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	stage("Deploy") {
-		steps {
-			container('gradle') {
-				script {
-					propfile = readProperties(file: './project.properties')
-					println("deploy:" + propfile['feature_deploy'])
-					if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-						withMaven(maven: 'MAVEN-3.6.3') {
-							echo 'I am deploying the artifact into the target environment'
-							echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
-							echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
-							echo 'shutting down the tomcat ESB server'
-							/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH stop || sleep 20"'
-							echo 'force stop any remaining mule process'
-							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' */
-							echo 'tomcat server stopped'
-							echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
-							/* sh 'scp -rp $WORKSPACE/artifacts/artifact.tar $DEPLOYMENT_USER@$DEPOYMENT_SERVER:$DEPLOYMENT_STAGE_DIR/'
-							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && rm -rf *.war *.jar"'
-							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && tar -xvzf artifact.tar && rm -rf *.jar"'
-							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' */
-							echo 'Deployment has been completed'
-							echo 'starting the tomcat ESB server'
-							/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
-							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' */
-							echo 'tomcat server started'
+		stage("Deploy") {
+			steps {
+				container('gradle') {
+					script {
+						propfile = readProperties(file: './project.properties')
+						println("deploy:" + propfile['feature_deploy'])
+						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
+							withMaven(maven: 'MAVEN-3.6.3') {
+								echo 'I am deploying the artifact into the target environment'
+								echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
+								echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
+								echo 'shutting down the tomcat ESB server'
+								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH stop || sleep 20"'
+								echo 'force stop any remaining mule process'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' */
+								echo 'tomcat server stopped'
+								echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
+								/* sh 'scp -rp $WORKSPACE/artifacts/artifact.tar $DEPLOYMENT_USER@$DEPOYMENT_SERVER:$DEPLOYMENT_STAGE_DIR/'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && rm -rf *.war *.jar"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && tar -xvzf artifact.tar && rm -rf *.jar"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' */
+								echo 'Deployment has been completed'
+								echo 'starting the tomcat ESB server'
+								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' */
+								echo 'tomcat server started'
+							}
+						} else {
+							echo "no need"
 						}
-					} else {
-						echo "no need"
 					}
 				}
 			}
 		}
 	}
-}
-
 	stage('Post Deploy Tests') {
 		parallel {
 			stage('Smoke Test') {
@@ -207,4 +204,3 @@ stages {
 		  	echo 'I am sending a notification with success'
 	  	}
   	}
-}
