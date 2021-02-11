@@ -82,10 +82,10 @@ spec:
 							echo 'Remove the line below when we switch to the actual EJB repo'
 							sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
 						}
-						sleep(60)
+						/*sleep(60)
 						timeout(time: 1, unit: 'MINUTES') {
 						waitForQualityGate abortPipeline: true
-						} 
+						}*/ 
 					}
 				}
 			}
@@ -123,16 +123,16 @@ spec:
 							withMaven(maven: 'MAVEN-3.6.3') {
 								HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
-									USERNAME=USERNAME_FEATURE_DEPLOY
-									HOSTS=$HOST_FEATURE_DEPLOY
+									USERNAME=${USERNAME_FEATURE_DEPLOY}
+									HOSTS=${HOST_FEATURE_DEPLOY}
 								}
 								if (env.BRANCH_NAME == 'dev' ) {
-									USERNAME=$USERNAME_DEV_DEPLOY
-									HOSTS=$HOST_DEV_DEPLOY
+									USERNAME=${USERNAME_DEV_DEPLOY}
+									HOSTS=${HOST_DEV_DEPLOY}
 								}
 								if (env.BRANCH_NAME == 'release') {
-									USERNAME=$USERNAME_RELEASE_DEPLOY
-									HOSTS=$HOST_RELEASE_DEPLOY
+									USERNAME=${USERNAME_RELEASE_DEPLOY}
+									HOSTS=${HOST_RELEASE_DEPLOY}
 								}
 								for (HOSTNAME in ${HOSTS}) {
 									$DEPOYMENT_SERVER=$HOSTNAME
