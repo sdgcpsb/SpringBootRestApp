@@ -121,6 +121,7 @@ spec:
 					script {
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
+								HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
 									USERNAME=$USERNAME_FEATURE_DEPLOY
 									HOSTS=$HOST_FEATURE_DEPLOY
