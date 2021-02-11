@@ -123,7 +123,7 @@ spec:
 							withMaven(maven: 'MAVEN-3.6.3') {
 								HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
-									USERNAME=$USERNAME_FEATURE_DEPLOY
+									USERNAME=USERNAME_FEATURE_DEPLOY
 									HOSTS=$HOST_FEATURE_DEPLOY
 								}
 								if (env.BRANCH_NAME == 'dev' ) {
