@@ -37,7 +37,8 @@ spec:
 		//URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
 	}
-	propfile = readProperties(file: './project.properties')
+	//All of these lines need to be within a script step (stages>stage>steps>script) in order to work
+	/*propfile = readProperties(file: './project.properties')
 	if (propfile['feature_deploy'] == "true" ) {
 		USERNAME='muleadmin'
 		HOSTS='10.6.74.90'
@@ -49,7 +50,7 @@ spec:
 	if (env.BRANCH_NAME == 'release') {
 		USERNAME='muleadmin'
 		HOSTS="'10.6.74.92' '10.6.74.93'"
-	}
+	}*/
 	stages {
 		stage('Build & Unit Test') {
 			steps {
@@ -61,7 +62,7 @@ spec:
 							//sh 'gradle --no-daemon clean build'
 							echo 'Add gradle clean and build for EJB and comment this step' 
 							sh 'mvn -f sample-java-app/pom.xml clean package'
-							//propfile = readProperties(file: './project.properties')
+							propfile = readProperties(file: './project.properties')
 							if (propfile['javadoc'] == "true") {
 								sh 'mvn javadoc:aggregate'
 							}
