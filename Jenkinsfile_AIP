@@ -34,7 +34,7 @@ spec:
 		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
 		REQUESTID='779'
 		STAGE_NAME='dev3'
-		URI='http://pwwsftapp01/executionmanager/api'
+		URI="http://pwwsftapp01/executionmanager/api"
 		USERNAME='devopsengineering@signetjewelers.com'
 	}
 	propfile = readProperties(file: './project.properties')
