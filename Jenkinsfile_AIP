@@ -1,4 +1,4 @@
-//def CONF = readProperties file: './project.properties'
+def CONF = readProperties file: './project.properties'
 
 pipeline {
 	agent {
