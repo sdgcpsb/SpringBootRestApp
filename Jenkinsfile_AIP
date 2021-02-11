@@ -27,20 +27,8 @@ stages {
 			container('gradle') {
 				withMaven(maven: 'MAVEN-3.6.3') {
 					echo 'I am executing build and unit test'
+					echo "Use the line below when we switch to the actual repo"
 					// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
-					echo " The following parameters are for reference only and we should be fine with the command above when we switch to the actual repo"
-					/* --no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditClient clean build 
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditLog clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBErrorTranslator clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p TaxESB clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FraudESB clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FulfillmentESB clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p PaymentESB clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBRadial clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAutomatedQueueRetry clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p AlertESB clean build
-					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p OrderReconESB clean build
-					*/
 					echo "Remove the line below when we switch to the actual repo"
 					sh 'mvn -f sample-java-app/pom.xml clean package'
 				}
@@ -71,8 +59,6 @@ stages {
 			container('gradle') {
 				script {
 					propfile = readProperties(file: './project.properties')
-					println("deploy:" + propfile['feature_deploy'])
-					println("reading properties ...")
 					if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 						withMaven(maven: 'MAVEN-3.6.3') {
 							echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
@@ -98,8 +84,6 @@ stages {
 			container('gradle') {
 				script {
 					propfile = readProperties(file: './project.properties')
-					println("deploy:" + propfile['feature_deploy'])
-					println("reading properties ...")
 					if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 						withMaven(maven: 'MAVEN-3.6.3') {
 							echo 'I am deploying the artifact into the target environment'
@@ -120,56 +104,16 @@ stages {
 							/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
 							sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
 							*/
-							
-							echo " The below commands will work only when we access to original repo"
-							/* deploy the WAR files on each UAT server
-							USERNAME=$bamboo_deployment_user
-							HOSTS="$bamboo_UAT_host1 $bamboo_UAT_host2"
-
-
-						    for HOSTNAME in ${HOSTS} ; do
-						    ssh -l ${USERNAME} ${HOSTNAME} "echo "shutting down the tomcat server" ;
-						    ${bamboo.tomcat_scripts}/esb_service stop ;
-						    echo "send kill to tomcat process" ;
-						    ps -ef | grep [j]ava | grep [o]pt/mule/latest | awk '{print \$2}' | xargs -I{} -t kill {} ;
-						    sleep 10 ;
-						    echo "force stop any remaining tomcat process" ;
-						    ps -ef | grep [j]ava | grep [o]pt/mule/latest | awk '{print \$2}' | xargs -I{} -t kill -9 {} ;
-						    echo "tomcat server stopped" ;
-						    echo "removing exploded WAR files currently in place from ${bamboo.deployment_path}" ;
-						    rm -rf ${bamboo.deployment_path}/AlertESB ;
-						    rm -rf ${bamboo.deployment_path}/FraudESB ;
-						    rm -rf ${bamboo.deployment_path}/TaxESB ;
-						    rm -rf ${bamboo.deployment_path}/PaymentESB ;
-						    rm -rf ${bamboo.deployment_path}/FulfillmentESB ;
-						    rm -rf ${bamboo.deployment_path}/ESBAuditLog ;
-						    rm -rf ${bamboo.deployment_path}/ESBAutomatedQueueRetry ;
-						    rm -rf ${bamboo.deployment_path}/OrderReconESB ;
-						    echo "currently exploded WAR files have been removed" ;
-		    echo "copying new WAR files into ${bamboo.deployment_path}" ;
-		    cp ${bamboo.stage_path}/AlertESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/AlertESB.war ;
-		    cp ${bamboo.stage_path}/FraudESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/FraudESB.war ;
-		    cp ${bamboo.stage_path}/TaxESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/TaxESB.war ;
-		    cp ${bamboo.stage_path}/PaymentESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/PaymentESB.war ;
-		    cp ${bamboo.stage_path}/FulfillmentESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/FulfillmentESB.war ;
-		    cp ${bamboo.stage_path}/ESBAuditLog-1.0-SNAPSHOT.war ${bamboo.deployment_path}/ESBAuditLog.war ;
-		    cp ${bamboo.stage_path}/ESBAutomatedQueueRetry-1.0-SNAPSHOT.war ${bamboo.deployment_path}/ESBAutomatedQueueRetry.war ;
-		    [ -f ${bamboo.stage_path}/OrderReconESB-1.0-SNAPSHOT.war ] && { cp ${bamboo.stage_path}/OrderReconESB-1.0-SNAPSHOT.war ${bamboo.deployment_path}/OrderReconESB.war; } ;
-		    echo "new WAR files have been copied into ${bamboo.deployment_path}" ;
-		    echo "starting up tomcat server" ; 
-		    ${bamboo.tomcat_scripts}/esb_service start ;
-		    echo "tomcat server started""
-		done
-		*/
-	                                         echo 'tomcat server started'
+						        echo 'tomcat server started'
+							}
 						}
-					} else {
-						echo "no need"
-					}
-				}
+						else {
+							 echo "Deployment not required"
+						}
+				   }
 			}
 		}
-	}
+	
 		stage('Post Deploy Tests') {
 		parallel {
 			stage('Smoke Test') {
