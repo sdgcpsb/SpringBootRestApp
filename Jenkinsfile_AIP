@@ -53,7 +53,10 @@ stages {
 				withMaven(maven: 'MAVEN-3.6.3') {
 					withSonarQubeEnv(installationName: 'Sonarqube') {
 						echo 'I am executing code quality using sonarqube'
-						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_${BRANCH_NAME} -Dsonar.projectKey=ESB_sample  sonar:sonar'	
+						echo ' Update the line below when we switch to actual ESB repo'	
+						// sh './gradle Sonarqube'
+						echo ' Remove the line below after we switch to ESB repo'
+						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_${BRANCH_NAME} -Dsonar.projectKey=ESB_sample  sonar:sonar'
 					}
 					 sleep(60)
 					timeout(time: 1, unit: 'MINUTES') {
