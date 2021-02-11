@@ -21,6 +21,35 @@ spec:
 """
 		}
 	}
+	environment {
+		GRADLE_PATH = '/opt/gradle/gradle-3.5.1/bin'
+		GRADLE_TASK = 'ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB'
+		DEPOYMENT_SERVER='10.6.74.90'
+		DEPLOYMENT_USER='muleadmin'
+		DEPLOYMENT_ARCHIVE_DIR='/home/muleadmin/stage/archive'
+		DEPLOYMENT_STAGE_DIR='/home/muleadmin/stage'
+		DEPLOYMENT_DIR='/opt/mule/latest/webapps'
+		WAR_FILES='AlertESB.war FraudESB.war TaxESB.war PaymentESB.war FulfillmentESB.war ESBAuditLog.war ESBAutomatedQueueRetry.war OrderReconESB.war'
+		ESB_BIN_PATH='/opt/mule/bin/esb_service'
+		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
+		RequestID=779
+		stage_name=dev3
+		uri=http://pwwsftapp01/executionmanager/api
+		username=devopsengineering@signetjewelers.com
+	}
+	propfile = readProperties(file: './project.properties')
+	if (propfile['feature_deploy'] == "true" ) {
+		USERNAME='muleadmin'
+		HOSTS='10.6.74.90'
+	}
+	if (env.BRANCH_NAME == 'dev' ) {
+		USERNAME='muleadmin'
+		HOSTS='10.6.74.91'
+	}
+	if (env.BRANCH_NAME == 'release') {
+		USERNAME='muleadmin'
+		HOSTS="'10.6.74.92' '10.6.74.93'"
+	}
 	stages {
 		stage('Build & Unit Test') {
 			steps {
@@ -29,10 +58,10 @@ spec:
 						withMaven(maven: 'MAVEN-3.6.3') {
 							echo 'I am executing build and unit test'
 							echo 'use the command below when we switch to EJB source'
-							// sh 'gradle --no-daemon clean build'
+							//sh 'gradle --no-daemon clean build'
 							echo 'Add gradle clean and build for EJB and comment this step' 
 							sh 'mvn -f sample-java-app/pom.xml clean package'
-							propfile = readProperties(file: './project.properties')
+							//propfile = readProperties(file: './project.properties')
 							if (propfile['javadoc'] == "true") {
 								sh 'mvn javadoc:aggregate'
 							}
@@ -72,7 +101,6 @@ spec:
 			steps {
 				container('gradle') {
 					script {
-						println("deploy:" + propfile['feature_deploy'])
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
 								echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
@@ -98,7 +126,6 @@ spec:
 			steps {
 				container('gradle') {
 					script {
-						println("deploy:" + propfile['feature_deploy'])
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
 								echo 'I am deploying the artifact into the target environment'
@@ -121,7 +148,7 @@ spec:
 								echo 'tomcat server started'
 							}
 						} else {
-							echo "no need"
+							echo "Deployment not required"
 						}
 					}
 				}
@@ -131,46 +158,28 @@ spec:
 			parallel {
 				stage('Smoke Test') {
 					steps {
-						echo "I am executing Smoke Test on target dev environment post deployment"
+						container('gradle') {
+							script {
+								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
+									withMaven(maven: 'MAVEN-3.6.3') {
+										echo "I am executing Smoke Test on target dev environment post deployment"
+									}
+								}
+							}
+						}
 					}
-					/*RESP=`curl -X GET "${bamboo.uri}/RequestsRunning" -H "accept: application/xml" -H "authorization: bearer lR0AA2qfq7v9Ry96vDAgqcer1GPVd5yStmv1_aJVFS43rk06EytB7WsS0_owoiXIgpOXmZVEfkY4ST0JwHtRBk7RH0QRaldWtQT8udC0VdimdGx38RddY2sGaeeF0t9Aflr5rh1Jc_EUfkNK8YrKVxQ6kxB05aCe46CD2fkognv7TiJATmht-ycUjEsd_oy8jH5EK9fmn9eL-wXavNTQcEdsUmFm3-2r3IJDzMK7XCa74qu353yOKLvVyZ1yYQBnc1_fY5GS1BDrFLUZprxpAS30lGEu-d_JTTOQ989UJtIEB3cZzDkIQzeqdYBGCsiDdjdHo2DC1FK2kVPyBITTbQ"`
-					echo "The response for current execution status is: $RESP"
-					if [ "$RESP" != "[]" ];
-					then
-					echo "There is a test executing currently in Worksoft. Hence, not proceeding with the execution of Worksoft test cases."
-					exit 1
-					else
-					echo "There are no tests executing right now. Hence, proceeding with Worksoft test execution"
-					fi
-					# To abort the request before attempting to re-run, uncomment and run below line.
-					# abort=$(curl -X PUT -H "Authorization: Bearer $token" -d "" -H "id: ${bamboo.RequestID}" ${bamboo.uri}/Request/${bamboo.RequestID}/abort/)
-					guid=$(curl -X PUT -H "Authorization: Bearer $token" -d "" -H "parameters: {TestEnv}{${bamboo.stage_name}}" -H "id: ${bamboo.RequestID}" ${bamboo.uri}/ExecuteRequest/ | tr -d \")
-					echo "The GUID is: $guid"
-					status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $2}' | tr -d \" | tr -d \})
-					echo "The status is: $status"
-					while [[ $status != *"Completed"* ]]
-					do
-					status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $2}' | tr -d \" | tr -d \})
-					echo "The status is: $status"
-					sleep 15
-					done
-					status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/)
-					echo "The status is: $status"
-					execstatus=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $3}' | tr -d \" | tr -d \})
-					echo "The exec status is: $execstatus"
-					if [[ $execstatus != *Passed* ]];
-					then
-					echo "Failed"
-					exit 1
-					else
-					echo "Passed"
-					exit
-					fi
-					exit */
 				}
 				stage('Security Test') {
 					steps {
-						echo 'I am running Security Test here'
+						container('gradle') {
+							script {
+								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
+									withMaven(maven: 'MAVEN-3.6.3') {
+										echo 'I am running Security Test here'
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -179,7 +188,6 @@ spec:
 	post {
   		always {
 			script {
-        			//propfile = readProperties(file: './project.properties')
 				if (propfile['javadoc'] == "true") {
 					javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
         			}
