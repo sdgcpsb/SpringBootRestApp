@@ -1,4 +1,4 @@
-def propfile = readProperties file: './project.properties'
+//def propfile = readProperties file: './project.properties'
 
 pipeline {
 	agent {
@@ -32,7 +32,7 @@ spec:
 							// sh 'gradle --no-daemon clean build'
 							echo 'Add gradle clean and build for EJB and comment this step' 
 							sh 'mvn -f sample-java-app/pom.xml clean package'
-							//propfile = readProperties(file: './project.properties')
+							propfile = readProperties(file: './project.properties')
 							if (propfile['javadoc'] == "true") {
 								sh 'mvn javadoc:aggregate'
 							}
