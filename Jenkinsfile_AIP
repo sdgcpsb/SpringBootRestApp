@@ -26,24 +26,23 @@ stages {
 		steps {
 			container('gradle') {
 				withMaven(maven: 'MAVEN-3.6.3') {
-					withSonarQubeEnv(installationName: 'Sonarqube') {
-						echo 'I am executing unit test'
-						// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
-						sh 'mvn -f sample-java-app/pom.xml clean package'
-						/* --no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditClient clean build 
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditLog clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBErrorTranslator clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p TaxESB clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FraudESB clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FulfillmentESB clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p PaymentESB clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBRadial clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAutomatedQueueRetry clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p AlertESB clean build
-						--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p OrderReconESB clean build
-						
-						*/
-					}
+					echo 'I am executing build and unit test'
+					// sh 'for i in ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB;do gradle --no-daemon -p ${i} clean build;done'
+					echo " The following parameters are for reference only and we should be fine with the command above when we switch to the actual repo"
+					/* --no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditClient clean build 
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAuditLog clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBErrorTranslator clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p TaxESB clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FraudESB clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p FulfillmentESB clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p PaymentESB clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBRadial clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p ESBAutomatedQueueRetry clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p AlertESB clean build
+					--no-daemon -g ${bamboo.build.working.directory}/${bamboo.buildNumber} -p OrderReconESB clean build
+					*/
+					echo "Remove the line below when we switch to the actual repo"
+					sh 'mvn -f sample-java-app/pom.xml clean package'
 				}
 			}
 		}
@@ -54,13 +53,12 @@ stages {
 				withMaven(maven: 'MAVEN-3.6.3') {
 					withSonarQubeEnv(installationName: 'Sonarqube') {
 						echo 'I am executing code quality using sonarqube'
-						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_sample_testingg -Dsonar.projectKey=ESB_sample  sonar:sonar'
+						sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=ESB_${BRANCH_NAME} -Dsonar.projectKey=ESB_sample  sonar:sonar'
+						
 						
 					}
 					 sleep(60)
 					timeout(time: 1, unit: 'MINUTES') {
-					
- 
 					waitForQualityGate abortPipeline: true
 					} 
 				}
