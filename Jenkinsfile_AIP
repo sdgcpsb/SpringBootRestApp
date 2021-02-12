@@ -135,8 +135,8 @@ spec:
 									HOSTS=${HOST_RELEASE_DEPLOY}
 								}
 								for (HOSTNAME in ${HOSTS}) {
-									$DEPOYMENT_SERVER=$HOSTNAME
-									$DEPLOYMENT_USER=$USERNAME
+									DEPOYMENT_SERVER=$HOSTNAME
+									DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment $HOSTNAME"
 									echo "Username = $USERNAME"
 									echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
