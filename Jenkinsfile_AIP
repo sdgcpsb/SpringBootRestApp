@@ -1,6 +1,6 @@
 def propfile
 def getFeatureDeployEnv(){
-  return ['10.6.74.90', '10.6.74.89']
+  return ["10.6.74.90", "10.6.74.89"]
 }
 def getDevDeployEnv(){
   return ['10.6.74.91']
@@ -129,7 +129,6 @@ spec:
 					script {
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
-								//HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
 									USERNAME=env.USERNAME_FEATURE_DEPLOY
 									HOSTS=env.HOSTS_FEATURE_DEPLOY
@@ -142,7 +141,8 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
-								for (HOSTNAME in HOSTS) {
+								//for (HOSTNAME in HOSTS) {
+								HOSTS.each { HOSTNAME ->
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
