@@ -44,7 +44,7 @@ spec:
 		HOSTS_RELEASE_DEPLOY="'10.6.74.92' '10.6.74.93'"
 	}
 	stages {
-		/*stage('Build & Unit Test') {
+		stage('Build & Unit Test') {
 			steps {
 				container('gradle') {
 					script {
@@ -80,7 +80,7 @@ spec:
 							echo "Change the line below when we switch to the actual EJB repo"
 							// sh 'gradle SonarQube'
 							echo 'Remove the line below when we switch to the actual EJB repo'
-							sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
+							//sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
 						}
 						/*sleep(60)
 						timeout(time: 1, unit: 'MINUTES') {
@@ -106,15 +106,15 @@ spec:
 								sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
 								*/
 								echo 'Remove the 3 lines below when we switch to the actual EJB repo'
-								sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
-								sh 'ls -lrt sample-java-app/target/'
-								sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+								//sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
+								//sh 'ls -lrt sample-java-app/target/'
+								//sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 							}
 						}
 					}
 				}
 			}
-		}*/
+		}
 		stage("Deploy") {
 			steps {
 				container('gradle') {
