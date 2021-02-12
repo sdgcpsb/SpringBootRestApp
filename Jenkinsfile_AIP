@@ -167,7 +167,7 @@ spec:
 									echo 'tomcat server started'
 								}
 							}	
-					}			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
+					}
 				}
 			}
 		}
