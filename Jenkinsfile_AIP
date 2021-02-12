@@ -99,10 +99,10 @@ spec:
 			}
 		}
 		stage("Publish Package") {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			steps {
 				container('gradle') {
 					script {
-						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
 								echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
 								echo 'Replace the next 4 lines to reflect the EJB artifact and push it to archiva'
@@ -118,16 +118,15 @@ spec:
 								//sh 'ls -lrt sample-java-app/target/'
 								//sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 							}
-						}
 					}
 				}
 			}
 		}
 		stage("Deploy") {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			steps {
 				container('gradle') {
 					script {
-						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
 								if (propfile['feature_deploy'] == "true" ) {
 									USERNAME=env.USERNAME_FEATURE_DEPLOY
@@ -142,8 +141,7 @@ spec:
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
 								echo "HOSTS: ${HOSTS}"
-								//for (HOSTNAME in HOSTS) {
-								HOSTS.each { HOSTNAME ->
+								for (HOSTNAME in HOSTS) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
@@ -168,38 +166,33 @@ spec:
 									*/
 									echo 'tomcat server started'
 								}
-							}
-						} else {
-							echo "Deployment not required"
-						}
-					}
+							}	
+					}			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 				}
 			}
 		}
 		stage('Post Deploy Tests') {
 			parallel {
 				stage('Smoke Test') {
+					when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 					steps {
 						container('gradle') {
 							script {
-								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 									withMaven(maven: 'MAVEN-3.6.3') {
 										echo "I am executing Smoke Test on target dev environment post deployment"
 									}
-								}
 							}
 						}
 					}
 				}
 				stage('Security Test') {
+					when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 					steps {
 						container('gradle') {
 							script {
-								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 									withMaven(maven: 'MAVEN-3.6.3') {
 										echo 'I am running Security Test here'
 									}
-								}
 							}
 						}
 					}
