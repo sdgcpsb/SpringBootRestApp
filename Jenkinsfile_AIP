@@ -134,7 +134,7 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOST_RELEASE_DEPLOY
 								}
-								for (HOSTNAME in ${HOSTS}) {
+								for (HOSTNAME in $HOSTS) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment $HOSTNAME"
