@@ -46,7 +46,7 @@ spec:
 		USERNAME='devopsengineering@signetjewelers.com'
 		USERNAME_FEATURE_DEPLOY='muleadmin'
 		//HOSTS_FEATURE_DEPLOY=getFeatureDeployEnv()
-		HOSTS_FEATURE_DEPLOY="'10.6.74.90', '10.6.74.89'"
+		HOSTS_FEATURE_DEPLOY="10.6.74.90, 10.6.74.89"
 		USERNAME_DEV_DEPLOY='muleadmin'
 		HOSTS_DEV_DEPLOY=getDevDeployEnv()
 		USERNAME_RELEASE='muleadmin'
