@@ -121,7 +121,7 @@ spec:
 					script {
 						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
 							withMaven(maven: 'MAVEN-3.6.3') {
-								HOSTNAME=''
+								//HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
 									USERNAME=env.USERNAME_FEATURE_DEPLOY
 									HOSTS=env.HOST_FEATURE_DEPLOY
@@ -134,11 +134,11 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOST_RELEASE_DEPLOY
 								}
-								for (HOSTNAME in $HOSTS) {
+								for (HOSTNAME in HOSTS) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
-									echo "I am deploying the artifact into the target environment $HOSTNAME"
-									echo "Username = $USERNAME"
+									echo "I am deploying the artifact into the target environment ${HOSTNAME}"
+									echo "Username = ${USERNAME}"
 									echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
 									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
 									echo 'shutting down the tomcat ESB server'
