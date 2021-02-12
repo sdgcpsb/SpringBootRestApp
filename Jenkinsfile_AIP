@@ -1,4 +1,4 @@
-def propfile
+//def propfile
 
 pipeline {
      
@@ -38,7 +38,7 @@ stage_name=dev3
 uri=http://pwwsftapp01/executionmanager/api
 username=devopsengineering@signetjewelers.com
 }
-propfile = readProperties(file: './project.properties')
+/* propfile = readProperties(file: './project.properties')
 if (propfile['feature_deploy'] == "true" ) {
 USERNAME='muleadmin'
 HOSTS='10.6.74.90'
@@ -51,7 +51,7 @@ if (env.BRANCH_NAME == 'release') {
 USERNAME='muleadmin'
 HOSTS=" '10.6.74.92' '10.6.74.93' "
 }
-  
+*/  
 stages {
 	stage('Build & Unit Test') {
 		steps {
