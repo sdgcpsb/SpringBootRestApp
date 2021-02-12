@@ -1,11 +1,19 @@
 def propfile
-
+def getFeatureDeployEnv(){
+  return ['10.6.74.90', '10.6.74.89']
+}
+def getDevDeployEnv(){
+  return ['10.6.74.91']
+}
+def getReleaseDeployEnv(){
+  return ['10.6.74.92', '10.6.74.93']
+}
 pipeline {
 	agent {
-    		kubernetes {
-			label 'SpringBootRestApp'
-			defaultContainer 'jnlp'
-			yaml """
+		kubernetes {
+		label 'SpringBootRestApp'
+		defaultContainer 'jnlp'
+		yaml """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -37,11 +45,12 @@ spec:
 		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
 		USERNAME_FEATURE_DEPLOY='muleadmin'
-		HOSTS_FEATURE_DEPLOY='10.6.74.90'
+		//HOSTS_FEATURE_DEPLOY=getFeatureDeployEnv()
+		HOSTS_FEATURE_DEPLOY="10.6.74.90, 10.6.74.89"
 		USERNAME_DEV_DEPLOY='muleadmin'
-		HOSTS_DEV_DEPLOY='10.6.74.91'
+		HOSTS_DEV_DEPLOY=getDevDeployEnv()
 		USERNAME_RELEASE='muleadmin'
-		HOSTS_RELEASE_DEPLOY="'10.6.74.92' '10.6.74.93'"
+		HOSTS_RELEASE_DEPLOY=getReleaseDeployEnv()
 	}
 	stages {
 		stage('Build & Unit Test') {
@@ -80,104 +89,100 @@ spec:
 							echo "Change the line below when we switch to the actual EJB repo"
 							// sh 'gradle SonarQube'
 							echo 'Remove the line below when we switch to the actual EJB repo'
-							sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
+							//sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
 						}
 						/*sleep(60)
 						timeout(time: 1, unit: 'MINUTES') {
-						waitForQualityGate abortPipeline: true
+							waitForQualityGate abortPipeline: true
 						}*/ 
 					}
 				}
 			}
 		}
 		stage("Publish Package") {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			steps {
 				container('gradle') {
 					script {
-						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-							withMaven(maven: 'MAVEN-3.6.3') {
-								echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
-								echo 'Replace the next 4 lines to reflect the EJB artifact and push it to archiva'
-								echo 'Use the 5 lines below when we switch to the actual EJB repo' 
-								/* echo 'copying the jar and war files from the individual target directories and copying it to artifacts directory '
-								sh "mkdir -p $WORKSPACE/artifacts"
-								sh 'cp /dist/libs/* $WORKSPACE/artifacts/' 
-								echo 'create a tar file on the Jenkins server'
-								sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
-								*/
-								echo 'Remove the 3 lines below when we switch to the actual EJB repo'
-								sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
-								sh 'ls -lrt sample-java-app/target/'
-								sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
-							}
+						withMaven(maven: 'MAVEN-3.6.3') {
+							echo 'I am pushing the artifact with unique name showing the branch from which it is generated, to Archiva'
+							echo 'Replace the next 4 lines to reflect the EJB artifact and push it to archiva'
+							echo 'Use the 5 lines below when we switch to the actual EJB repo' 
+							/* echo 'copying the jar and war files from the individual target directories and copying it to artifacts directory '
+							sh "mkdir -p $WORKSPACE/artifacts"
+							sh 'cp /dist/libs/* $WORKSPACE/artifacts/' 
+							echo 'create a tar file on the Jenkins server'
+							sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
+							*/
+							echo 'Remove the 3 lines below when we switch to the actual EJB repo'
+							//sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
+							//sh 'ls -lrt sample-java-app/target/'
+							//sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 						}
 					}
 				}
 			}
 		}
 		stage("Deploy") {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			steps {
 				container('gradle') {
 					script {
-						if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-							withMaven(maven: 'MAVEN-3.6.3') {
-								HOSTNAME=''
-								if (propfile['feature_deploy'] == "true" ) {
-									USERNAME=${USERNAME_FEATURE_DEPLOY}
-									HOSTS=${HOST_FEATURE_DEPLOY}
-								}
-								if (env.BRANCH_NAME == 'dev' ) {
-									USERNAME=${USERNAME_DEV_DEPLOY}
-									HOSTS=${HOST_DEV_DEPLOY}
-								}
-								if (env.BRANCH_NAME == 'release') {
-									USERNAME=${USERNAME_RELEASE_DEPLOY}
-									HOSTS=${HOST_RELEASE_DEPLOY}
-								}
-								for (HOSTNAME in ${HOSTS}) {
-									$DEPOYMENT_SERVER=$HOSTNAME
-									$DEPLOYMENT_USER=$USERNAME
-									echo "I am deploying the artifact into the target environment $HOSTNAME"
-									echo "Username = $USERNAME"
-									echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
-									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
-									echo 'shutting down the tomcat ESB server'
-									/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH stop || sleep 20"'
-									echo 'force stop any remaining mule process'
-									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' 
-									*/
-									echo 'tomcat server stopped'
-									echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
-									/* sh 'scp -rp $WORKSPACE/artifacts/artifact.tar $DEPLOYMENT_USER@$DEPOYMENT_SERVER:$DEPLOYMENT_STAGE_DIR/'
-									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && rm -rf *.war *.jar"'
-									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && tar -xvzf artifact.tar && rm -rf *.jar"'
-									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' 
-									*/
-									echo 'Deployment has been completed'
-									echo 'starting the tomcat ESB server'
-									/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
-									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
-									*/
-									echo 'tomcat server started'
-								}
+						withMaven(maven: 'MAVEN-3.6.3') {
+							if (propfile['feature_deploy'] == "true" ) {
+								USERNAME=env.USERNAME_FEATURE_DEPLOY
+								HOSTS=env.HOSTS_FEATURE_DEPLOY
 							}
-						} else {
-							echo "Deployment not required"
-						}
+							if (env.BRANCH_NAME == 'dev' ) {
+								USERNAME=env.USERNAME_DEV_DEPLOY
+								HOSTS=env.HOSTS_DEV_DEPLOY
+							}
+							if (env.BRANCH_NAME == 'release') {
+								USERNAME=env.USERNAME_RELEASE_DEPLOY
+								HOSTS=env.HOSTS_RELEASE_DEPLOY
+							}
+							echo "ENV HOSTS: ${env.HOSTS_FEATURE_DEPLOY}"
+							echo "HOSTS: ${HOSTS}"
+							//for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
+							HOSTS.tokenize(',').each { HOSTNAME ->
+								//env.DEPOYMENT_SERVER=$HOSTNAME
+								//env.DEPLOYMENT_USER=$USERNAME
+								echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
+								echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
+								echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
+								echo 'shutting down the tomcat ESB server'
+								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH stop || sleep 20"'
+								echo 'force stop any remaining mule process'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "if [[ $(ps aux | grep /opt/mule/latest/ | grep -vc grep)  > 0 ]]; then "kill -9 $(ps -ef|pgrep -f "/opt/mule/latest/bin")"; else echo "do nothing"; fi"' 
+								*/
+								echo 'tomcat server stopped'
+								echo 'copying the tar file from jenkins to deployment directory on app and remove the old folders and untarring the new jar and war files'
+								/* sh 'scp -rp $WORKSPACE/artifacts/artifact.tar $DEPLOYMENT_USER@$DEPOYMENT_SERVER:$DEPLOYMENT_STAGE_DIR/'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && rm -rf *.war *.jar"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_STAGE_DIR && tar -xvzf artifact.tar && rm -rf *.jar"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "cd $DEPLOYMENT_DIR && rm -rf $ESB_WAR_FOLDERS && cp -rp $DEPLOYMENT_STAGE_DIR/*.war $DEPLOYMENT_DIR"' 
+								*/
+								echo 'Deployment has been completed'
+								echo 'starting the tomcat ESB server'
+								/* sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "$ESB_BIN_PATH start"'
+								sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
+								*/
+								echo 'tomcat server started'
+							}
+						}	
 					}
 				}
 			}
 		}
 		stage('Post Deploy Tests') {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			parallel {
 				stage('Smoke Test') {
 					steps {
 						container('gradle') {
 							script {
-								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-									withMaven(maven: 'MAVEN-3.6.3') {
-										echo "I am executing Smoke Test on target dev environment post deployment"
-									}
+								withMaven(maven: 'MAVEN-3.6.3') {
+									echo "I am executing Smoke Test on target dev environment post deployment"
 								}
 							}
 						}
@@ -187,10 +192,8 @@ spec:
 					steps {
 						container('gradle') {
 							script {
-								if (propfile['feature_deploy'] == "true" || env.BRANCH_NAME == 'dev' || env.BRANCH_NAME == 'release') {
-									withMaven(maven: 'MAVEN-3.6.3') {
-										echo 'I am running Security Test here'
-									}
+								withMaven(maven: 'MAVEN-3.6.3') {
+									echo 'I am running Security Test here'
 								}
 							}
 						}
@@ -204,10 +207,10 @@ spec:
 			script {
 				if (propfile['javadoc'] == "true") {
 					javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
-        			}
+    			}
 		  	}
 	  	}
-    		failure {
+		failure {
 			/*mail bcc: '', 
 			 body: "<b>Example</b><br>\n<br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} <br> URL de build: ${env.BUILD_URL}", 
 			 cc: '', 
@@ -218,7 +221,7 @@ spec:
 			 subject: "ERROR CI: Project name -> ${env.JOB_NAME}", 
 			 to: "foo@foomail.com";*/
 			echo 'I am sending a notification with failure'
-    		}
+		}
 	  	success {
 		  	echo 'I am sending a notification with success'
 	  	}
