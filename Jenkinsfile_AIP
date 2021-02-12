@@ -134,8 +134,8 @@ spec:
 									USERNAME=${USERNAME_RELEASE_DEPLOY}
 									HOSTS=${HOST_RELEASE_DEPLOY}
 								}
-								for (HOSTNAME in ${HOSTS}) {
-									//DEPOYMENT_SERVER=$HOSTNAME}
+								/*for (HOSTNAME in ${HOSTS}) {
+									//DEPOYMENT_SERVER=$HOSTNAME
 									//DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment $HOSTNAME"
 									//echo "Username = $USERNAME"
@@ -159,7 +159,7 @@ spec:
 									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
 									*/
 									echo 'tomcat server started'
-								}
+								}*/
 							}
 						} else {
 							echo "Deployment not required"
