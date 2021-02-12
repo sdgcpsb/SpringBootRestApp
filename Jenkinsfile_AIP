@@ -44,7 +44,7 @@ spec:
 		HOSTS_RELEASE_DEPLOY="'10.6.74.92' '10.6.74.93'"
 	}
 	stages {
-		stage('Build & Unit Test') {
+		/*stage('Build & Unit Test') {
 			steps {
 				container('gradle') {
 					script {
@@ -114,7 +114,7 @@ spec:
 					}
 				}
 			}
-		}
+		}*/
 		stage("Deploy") {
 			steps {
 				container('gradle') {
