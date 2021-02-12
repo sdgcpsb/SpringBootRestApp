@@ -172,9 +172,10 @@ spec:
 			}
 		}
 		stage('Post Deploy Tests') {
+			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			parallel {
 				stage('Smoke Test') {
-					when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
+					//when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 					steps {
 						container('gradle') {
 							script {
@@ -186,7 +187,7 @@ spec:
 					}
 				}
 				stage('Security Test') {
-					when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
+					//when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 					steps {
 						container('gradle') {
 							script {
