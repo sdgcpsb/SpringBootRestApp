@@ -164,8 +164,8 @@ spec:
 				}
 			}
 		}
-	}
-}
+	
+
 	stage('Post Deploy Tests') {
 		parallel {
 			stage('Smoke Test') {
