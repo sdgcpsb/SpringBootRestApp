@@ -123,22 +123,22 @@ spec:
 							withMaven(maven: 'MAVEN-3.6.3') {
 								HOSTNAME=''
 								if (propfile['feature_deploy'] == "true" ) {
-									USERNAME=${USERNAME_FEATURE_DEPLOY}
-									HOSTS=${HOST_FEATURE_DEPLOY}
+									USERNAME=env.USERNAME_FEATURE_DEPLOY
+									HOSTS=env.HOST_FEATURE_DEPLOY
 								}
 								if (env.BRANCH_NAME == 'dev' ) {
-									USERNAME=${USERNAME_DEV_DEPLOY}
-									HOSTS=${HOST_DEV_DEPLOY}
+									USERNAME=env.USERNAME_DEV_DEPLOY
+									HOSTS=env.HOST_DEV_DEPLOY
 								}
 								if (env.BRANCH_NAME == 'release') {
-									USERNAME=${USERNAME_RELEASE_DEPLOY}
-									HOSTS=${HOST_RELEASE_DEPLOY}
+									USERNAME=env.USERNAME_RELEASE_DEPLOY
+									HOSTS=env.HOST_RELEASE_DEPLOY
 								}
-								//for (HOSTNAME in ${HOSTS}) {
-									//DEPOYMENT_SERVER=$HOSTNAME
-									//DEPLOYMENT_USER=$USERNAME
+								for (HOSTNAME in ${HOSTS}) {
+									//env.DEPOYMENT_SERVER=$HOSTNAME
+									//env.DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment $HOSTNAME"
-									//echo "Username = $USERNAME"
+									echo "Username = $USERNAME"
 									echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
 									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
 									echo 'shutting down the tomcat ESB server'
@@ -159,7 +159,7 @@ spec:
 									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"' 
 									*/
 									echo 'tomcat server started'
-								//}
+								}
 							}
 						} else {
 							echo "Deployment not required"
