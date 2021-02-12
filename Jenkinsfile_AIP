@@ -141,7 +141,7 @@ spec:
 									HOSTS[]=env.HOSTS_RELEASE_DEPLOY
 								}
 								echo "HOSTS: ${HOSTS}"
-								for (HOSTNAME in HOSTS) {
+								for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
 									echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
