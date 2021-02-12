@@ -37,11 +37,11 @@ spec:
 		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
 		USERNAME_FEATURE_DEPLOY='muleadmin'
-		HOSTS_FEATURE_DEPLOY='10.6.74.90'
+		HOSTS_FEATURE_DEPLOY=["10.6.74.90", "10.6.74.89"]
 		USERNAME_DEV_DEPLOY='muleadmin'
-		HOSTS_DEV_DEPLOY='10.6.74.91'
+		HOSTS_DEV_DEPLOY=["10.6.74.91"]
 		USERNAME_RELEASE='muleadmin'
-		HOSTS_RELEASE_DEPLOY="'10.6.74.92' '10.6.74.93'"
+		HOSTS_RELEASE_DEPLOY=["10.6.74.92", "10.6.74.93"]
 	}
 	stages {
 		stage('Build & Unit Test') {
@@ -139,8 +139,7 @@ spec:
 								for (HOSTNAME in HOSTS) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
-									echo "I am deploying the artifact into the target environment ${HOSTNAME}"
-									echo "Username = ${USERNAME}"
+									echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
 									echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
 									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
 									echo 'shutting down the tomcat ESB server'
