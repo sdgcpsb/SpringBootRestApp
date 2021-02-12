@@ -1,6 +1,6 @@
 def propfile
 def getFeatureDeployEnv(){
-  return ["10.6.74.90", "10.6.74.89"]
+  return ['10.6.74.90', '10.6.74.89']
 }
 def getDevDeployEnv(){
   return ['10.6.74.91']
@@ -141,6 +141,7 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
+								echo "HOSTS: ${HOSTS}"
 								//for (HOSTNAME in HOSTS) {
 								HOSTS.each { HOSTNAME ->
 									//env.DEPOYMENT_SERVER=$HOSTNAME
