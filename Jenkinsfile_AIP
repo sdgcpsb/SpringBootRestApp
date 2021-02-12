@@ -22,7 +22,7 @@ spec:
 """
 }
     }
-environment {
+/* environment {
 GRADLE_PATH = '/opt/gradle/gradle-3.5.1/bin'
 GRADLE_TASK = 'ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB'
 DEPOYMENT_SERVER='10.6.74.90'
@@ -38,6 +38,7 @@ stage_name=dev3
 uri=http://pwwsftapp01/executionmanager/api
 username=devopsengineering@signetjewelers.com
 }
+*/
 /* propfile = readProperties(file: './project.properties')
 if (propfile['feature_deploy'] == "true" ) {
 USERNAME='muleadmin'
