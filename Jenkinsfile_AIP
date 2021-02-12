@@ -131,8 +131,8 @@ spec:
 								}
 								echo "ENV HOSTS: ${env.HOSTS_FEATURE_DEPLOY}"
 								echo "HOSTS: ${HOSTS}"
-								for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
-									//HOSTS.tokenize(',').each { HOSTNAME ->
+								//for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
+									HOSTS.tokenize(',').each { HOSTNAME ->
 									//env.DEPOYMENT_SERVER=$HOSTNAME
 									//env.DEPLOYMENT_USER=$USERNAME
 									echo 'I am deploying the artifact into the target environment $HOSTNAME'
@@ -154,7 +154,7 @@ spec:
 									sh 'ssh $DEPLOYMENT_USER@$DEPOYMENT_SERVER "sleep 20"'  
 									*/
 									echo 'tomcat server started'
-								}
+								// }
 							}	
 					}
 				}
