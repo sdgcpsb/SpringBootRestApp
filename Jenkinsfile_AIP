@@ -140,7 +140,7 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
-								echo "ENV HOSTS: ${env.USERNAME_DEV_DEPLOY}"
+								echo "ENV HOSTS: ${env.HOSTS_FEATURE_DEPLOY}"
 								echo "HOSTS: ${HOSTS}"
 								for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
 									//env.DEPOYMENT_SERVER=$HOSTNAME
