@@ -130,15 +130,15 @@ spec:
 							withMaven(maven: 'MAVEN-3.6.3') {
 								if (propfile['feature_deploy'] == "true" ) {
 									USERNAME=env.USERNAME_FEATURE_DEPLOY
-									HOSTS[]=env.HOSTS_FEATURE_DEPLOY
+									HOSTS=env.HOSTS_FEATURE_DEPLOY
 								}
 								if (env.BRANCH_NAME == 'dev' ) {
 									USERNAME=env.USERNAME_DEV_DEPLOY
-									HOSTS[]=env.HOSTS_DEV_DEPLOY
+									HOSTS=env.HOSTS_DEV_DEPLOY
 								}
 								if (env.BRANCH_NAME == 'release') {
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
-									HOSTS[]=env.HOSTS_RELEASE_DEPLOY
+									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
 								echo "HOSTS: ${HOSTS}"
 								for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
