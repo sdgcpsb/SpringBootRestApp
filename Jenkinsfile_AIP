@@ -220,9 +220,9 @@ spec:
   		always {
 			script {
 				if (propfile['javadoc'] == "true") {
-					//javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
+					javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
 					echo "Executing job path ${env.JOB_NAME}"
-					javadoc(javadocDir: "/${env.JOB_NAME}/", keepAll: true)
+					
         			}
 		  	}
 	  	}
