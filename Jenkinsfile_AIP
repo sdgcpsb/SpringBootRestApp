@@ -221,7 +221,7 @@ spec:
 			script {
 				if (propfile['javadoc'] == "true") {
 					//javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/target/site/apidocs", keepAll: true)
-					javadoc(javadocDir: "/$WORKSPACE/", keepAll: true)
+					javadoc(javadocDir: "/home/jenkins/agent/workspace/${env.JOB_NAME}/", keepAll: true)
         			}
 		  	}
 	  	}
