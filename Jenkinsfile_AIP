@@ -1,13 +1,4 @@
 def propfile
-def getFeatureDeployEnv(){
-  return ['10.6.74.90', '10.6.74.89']
-}
-def getDevDeployEnv(){
-  return ['10.6.74.91']
-}
-def getReleaseDeployEnv(){
-  return ['10.6.74.92', '10.6.74.93']
-}
 pipeline {
 	agent {
     		kubernetes {
