@@ -52,6 +52,17 @@ spec:
 							echo "Remove the line below when we switch to the actual repo"
 							sh 'mvn -f sample-java-app/pom.xml clean package'
 							propfile = readProperties(file: './project.properties')	
+							if (propfile['javadoc'] == "true") {
+								sh 'mvn javadoc:aggregate'
+							}
+							if (propfile['jacoco'] == "true") {
+								jacoco( 
+									execPattern: '**/*.exec',
+									classPattern: '**/*.class',
+									sourcePattern: '**/*.java',
+									exclusionPattern: '**/test*'
+								)
+							}
 						}	
 					}
 				}
@@ -118,7 +129,7 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
-									HOSTS.tokenize(',').each { HOSTNAME ->
+								HOSTS.tokenize(',').each { HOSTNAME ->
 									echo 'I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}'
 									echo 'Replace all the lines below for ESB and add the parameters to propfile and make refrences below'
 									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
@@ -140,7 +151,7 @@ spec:
 									sh 'ssh ${USERNAME}@${HOSTNAME} "sleep 20"' 
 									*/
 									echo 'tomcat server started'
-								 }
+								}
 							}	
 					}
 				}
