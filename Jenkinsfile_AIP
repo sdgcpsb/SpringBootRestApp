@@ -1,13 +1,5 @@
 def propfile
-def getFeatureDeployEnv(){
-  return ['10.6.74.90', '10.6.74.89']
-}
-def getDevDeployEnv(){
-  return ['10.6.74.91']
-}
-def getReleaseDeployEnv(){
-  return ['10.6.74.92', '10.6.74.93']
-}
+
 pipeline {
 	agent {
 		kubernetes {
@@ -45,12 +37,11 @@ spec:
 		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
 		USERNAME_FEATURE_DEPLOY='muleadmin'
-		//HOSTS_FEATURE_DEPLOY=getFeatureDeployEnv()
-		HOSTS_FEATURE_DEPLOY="10.6.74.90, 10.6.74.89"
+		HOSTS_FEATURE_DEPLOY="10.6.74.90"
 		USERNAME_DEV_DEPLOY='muleadmin'
-		HOSTS_DEV_DEPLOY=getDevDeployEnv()
+		HOSTS_DEV_DEPLOY="10.6.74.91, 10.6.74.92"
 		USERNAME_RELEASE='muleadmin'
-		HOSTS_RELEASE_DEPLOY=getReleaseDeployEnv()
+		HOSTS_RELEASE_DEPLOY="10.6.74.93, 10.6.74.94"
 	}
 	stages {
 		stage('Build & Unit Test') {
@@ -91,10 +82,10 @@ spec:
 							echo 'Remove the line below when we switch to the actual EJB repo'
 							//sh 'mvn -f sample-java-app/pom.xml -Dsonar.projectName=EJB_${BRANCH_NAME} -Dsonar.projectKey=EJB_sample sonar:sonar'
 						}
-						/*sleep(60)
+						sleep(60)
 						timeout(time: 1, unit: 'MINUTES') {
 							waitForQualityGate abortPipeline: true
-						}*/ 
+						} 
 					}
 				}
 			}
@@ -115,9 +106,9 @@ spec:
 							sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
 							*/
 							echo 'Remove the 3 lines below when we switch to the actual EJB repo'
-							//sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
-							//sh 'ls -lrt sample-java-app/target/'
-							//sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
+							sh 'mv sample-java-app/target/sample-0.0.1-SNAPSHOT.jar sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
+							sh 'ls -lrt sample-java-app/target/'
+							sh 'mvn -X deploy:deploy-file  -Dfile=sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'
 						}
 					}
 				}
@@ -141,12 +132,8 @@ spec:
 								USERNAME=env.USERNAME_RELEASE_DEPLOY
 								HOSTS=env.HOSTS_RELEASE_DEPLOY
 							}
-							echo "ENV HOSTS: ${env.HOSTS_FEATURE_DEPLOY}"
-							echo "HOSTS: ${HOSTS}"
 							//for (HOSTNAME in ['10.6.74.90', '10.6.74.89']) {
 							HOSTS.tokenize(',').each { HOSTNAME ->
-								//env.DEPOYMENT_SERVER=$HOSTNAME
-								//env.DEPLOYMENT_USER=$USERNAME
 								echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
 								echo 'Replace all the lines below for EJB and add the parameters to propfile and make refrences below'
 								echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
@@ -183,6 +170,40 @@ spec:
 							script {
 								withMaven(maven: 'MAVEN-3.6.3') {
 									echo "I am executing Smoke Test on target dev environment post deployment"
+									/*RESP=`curl -X GET "${bamboo.uri}/RequestsRunning" -H "accept: application/xml" -H "authorization: bearer lR0AA2qfq7v9Ry96vDAgqcer1GPVd5yStmv1_aJVFS43rk06EytB7WsS0_owoiXIgpOXmZVEfkY4ST0JwHtRBk7RH0QRaldWtQT8udC0VdimdGx38RddY2sGaeeF0t9Aflr5rh1Jc_EUfkNK8YrKVxQ6kxB05aCe46CD2fkognv7TiJATmht-ycUjEsd_oy8jH5EK9fmn9eL-wXavNTQcEdsUmFm3-2r3IJDzMK7XCa74qu353yOKLvVyZ1yYQBnc1_fY5GS1BDrFLUZprxpAS30lGEu-d_JTTOQ989UJtIEB3cZzDkIQzeqdYBGCsiDdjdHo2DC1FK2kVPyBITTbQ"`
+									echo "The response for current execution status is: $RESP"
+									if [ "$RESP" != "[]" ];
+									then
+									echo "There is a test executing currently in Worksoft. Hence, not proceeding with the execution of Worksoft test cases."
+									exit 1
+									else
+									echo "There are no tests executing right now. Hence, proceeding with Worksoft test execution"
+									fi
+									# To abort the request before attempting to re-run, uncomment and run below line.
+									# abort=$(curl -X PUT -H "Authorization: Bearer $token" -d "" -H "id: ${bamboo.RequestID}" ${bamboo.uri}/Request/${bamboo.RequestID}/abort/)
+									guid=$(curl -X PUT -H "Authorization: Bearer $token" -d "" -H "parameters: {TestEnv}{${bamboo.stage_name}}" -H "id: ${bamboo.RequestID}" ${bamboo.uri}/ExecuteRequest/ | tr -d \")
+									echo "The GUID is: $guid"
+									status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $2}' | tr -d \" | tr -d \})
+									echo "The status is: $status"
+									while [[ $status != *"Completed"* ]]
+									do
+									status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $2}' | tr -d \" | tr -d \})
+									echo "The status is: $status"
+									sleep 15
+									done
+									status=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/)
+									echo "The status is: $status"
+									execstatus=$(curl -X GET -H "Authorization: Bearer $token" -d "" -H "APIRequestID: $guid" ${bamboo.uri}/ExecutionStatus/ | awk -F':' '{print $3}' | tr -d \" | tr -d \})
+									echo "The exec status is: $execstatus"
+									if [[ $execstatus != *Passed* ]];
+									then
+									echo "Failed"
+									exit 1
+									else
+									echo "Passed"
+									exit
+									fi
+									exit */
 								}
 							}
 						}
