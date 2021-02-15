@@ -104,7 +104,8 @@ spec:
 							*/
 							echo 'Remove the below 3 lines after switching to the actual ESB repo'
 							sh 'cd sample-java-app/target/'
-							sh 'mv sample-0.0.1-SNAPSHOT.jar.original sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
+							sh 'ls'
+							//sh 'mv sample-0.0.1-SNAPSHOT.jar.original sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar'
 							sh 'ls -lrt sample-java-app/target/'
 							sh 'cat /$WORKSPACE/sample-java-app/pom.xml'
 							sh 'mvn -X deploy:deploy-file  -Dfile=/$WORKSPACE/sample-java-app/target/sample-build_${BUILD_NUMBER}-branch_${BRANCH_NAME}.jar -DpomFile=/$WORKSPACE/sample-java-app/pom.xml -DrepositoryId=snapshots -Durl=https://archiva.sgn.devops.accentureanalytics.com/repository/snapshots/'	
