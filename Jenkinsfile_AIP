@@ -23,8 +23,6 @@ spec:
 	environment {
 		GRADLE_PATH = '/opt/gradle/gradle-3.5.1/bin'
 		GRADLE_TASK = 'ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB'
-		DEPOYMENT_SERVER='10.6.74.90'
-		DEPLOYMENT_USER='muleadmin'
 		DEPLOYMENT_ARCHIVE_DIR='/home/muleadmin/stage/archive'
 		DEPLOYMENT_STAGE_DIR='/home/muleadmin/stage'
 		DEPLOYMENT_DIR='/opt/mule/latest/webapps'
@@ -36,13 +34,12 @@ spec:
 		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
 		USERNAME_FEATURE_DEPLOY='muleadmin'
-		//HOSTS_FEATURE_DEPLOY=getFeatureDeployEnv()
-		HOSTS_FEATURE_DEPLOY="'10.6.74.90', '10.6.74.89'"
+		HOSTS_FEATURE_DEPLOY="10.6.74.90"
 		USERNAME_DEV_DEPLOY='muleadmin'
-		HOSTS_DEV_DEPLOY=getDevDeployEnv()
+		HOSTS_DEV_DEPLOY="10.6.74.91, 10.6.74.92"
 		USERNAME_RELEASE='muleadmin'
-		HOSTS_RELEASE_DEPLOY=getReleaseDeployEnv()
-	       }
+		HOSTS_RELEASE_DEPLOY="10.6.74.93, 10.6.74.94"
+	}
 	stages {
 		stage('Build & Unit Test') {
 			steps {
