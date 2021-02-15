@@ -1,13 +1,4 @@
 def propfile
-def getFeatureDeployEnv(){
-  return ['10.6.74.90', '10.6.74.89']
-}
-def getDevDeployEnv(){
-  return ['10.6.74.91']
-}
-def getReleaseDeployEnv(){
-  return ['10.6.74.92', '10.6.74.93']
-}
 pipeline {
 	agent {
     		kubernetes {
@@ -140,8 +131,8 @@ spec:
 								}
 									HOSTS.tokenize(',').each { HOSTNAME ->
 									echo 'I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}'
-									echo ${HOSTNAME}
-									echo ${USERNAME}
+									echo "ENV HOSTS: ${HOSTNAME}"
+									echo "ENV HOSTS: ${USERNAME}"
 									echo 'Replace all the lines below for ESB and add the parameters to propfile and make refrences below'
 									echo 'Accom logic for multiple env and mult servers in each env based on the branch name'
 									echo 'shutting down the tomcat ESB server'
