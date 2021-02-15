@@ -51,11 +51,7 @@ spec:
 		HOSTS_DEV_DEPLOY=getDevDeployEnv()
 		USERNAME_RELEASE='muleadmin'
 		HOSTS_RELEASE_DEPLOY=getReleaseDeployEnv()
-		uri='http://pwwsftapp01/executionmanager/api'
-		username='devopsengineering@signetjewelers.com'
-		RequestID='779'
-		stage_name='dev3'
-	}
+	       }
 	stages {
 		stage('Build & Unit Test') {
 			steps {
