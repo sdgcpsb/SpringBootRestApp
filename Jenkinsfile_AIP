@@ -68,7 +68,7 @@ spec:
 				}
 			}
 		}
-		stage('Code Quality') {
+		/* stage('Code Quality') {
 			steps {
 				container('gradle') {
 					withMaven(maven: 'MAVEN-3.6.3') {
@@ -86,7 +86,7 @@ spec:
 					}
 				}
 			}
-		}
+		} */
 		stage("Publish Package") {
 			when { expression {env.GIT_BRANCH == 'origin/dev' || env.GIT_BRANCH == 'origin/release'|| propfile['feature_deploy'] == "true" }}
 			steps {
@@ -129,7 +129,7 @@ spec:
 									USERNAME=env.USERNAME_RELEASE_DEPLOY
 									HOSTS=env.HOSTS_RELEASE_DEPLOY
 								}
-								echo "ENV HOSTS: ${env.HOSTS_FEATURE_DEPLOY}"
+								echo "ENV HOSTS: ${env.HOSTS_DEV_DEPLOY}"
 								echo "HOSTS: ${HOSTS}"
 								HOSTS.tokenize(',').each { HOSTNAME ->
 									echo 'I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}'
