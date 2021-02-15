@@ -104,6 +104,8 @@ spec:
 								sh "cd $WORKSPACE/artifacts/ && tar -cvzf artifact.tar * && md5sum artifact.tar archiveArtifacts artifacts: 'artifacts/*.tar', fingerprint: true 
 								*/
 								echo 'Remove the 3 lines below when we switch to the actual EJB repo'
+								sh 'pwd'
+								sh 'echo ${WORKSPACE}'
 								sh 'cd sample-java-app/target/'
 								sh 'ls -la'
 								sh 'cd ./sample-java-app/'
