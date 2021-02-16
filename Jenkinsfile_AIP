@@ -23,22 +23,22 @@ spec:
 	}
 	environment {
 		GRADLE_PATH = '/opt/gradle/gradle-3.5.1/bin'
-		GRADLE_TASK = 'ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB'
+		GRADLE_TASK = 'EcomEJBProxy'
 		DEPLOYMENT_ARCHIVE_DIR='/home/muleadmin/stage/archive'
 		DEPLOYMENT_STAGE_DIR='/home/muleadmin/stage'
-		DEPLOYMENT_DIR='/opt/mule/latest/webapps'
-		WAR_FILES='AlertESB.war FraudESB.war TaxESB.war PaymentESB.war FulfillmentESB.war ESBAuditLog.war ESBAutomatedQueueRetry.war OrderReconESB.war'
+		DEPLOYMENT_DIR='/var/WebSphere/deploy'
+		WAR_FILES='EcomEJBProxy'
 		ESB_BIN_PATH='/opt/mule/bin/esb_service'
 		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
 		REQUESTID='779'
 		STAGE_NAME='dev3'
 		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
 		USERNAME='devopsengineering@signetjewelers.com'
-		USERNAME_FEATURE_DEPLOY='muleadmin'
+		USERNAME_FEATURE_DEPLOY='wasadmin'
 		HOSTS_FEATURE_DEPLOY="10.6.74.90"
-		USERNAME_DEV_DEPLOY='muleadmin'
+		USERNAME_DEV_DEPLOY='wasadmin'
 		HOSTS_DEV_DEPLOY="10.6.74.91, 10.6.74.92"
-		USERNAME_RELEASE='muleadmin'
+		USERNAME_RELEASE='wasadmin'
 		HOSTS_RELEASE_DEPLOY="10.6.74.93, 10.6.74.94"
 	}
 	stages {
