@@ -35,11 +35,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-      			<groupId>io.buildpacks.example</groupId>
-			<artifactId>sample</artifactId>
-      			<version>${project.version}</version>
-    		</dependency>
 	</dependencies>
 	
 	
