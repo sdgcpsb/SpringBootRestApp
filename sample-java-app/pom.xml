@@ -9,16 +9,15 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.buildpacks.example</groupId>
-	<artifactId>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<artifactId>sample</artifactId>
+	<version>${revision}</version>
 	<!-- <version>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</version> -->
-	<name>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</name>
+	<name>CI-Test</name>
 	<description>Sample Java Application</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<git.branchName>${env.GIT_BRANCH}</git.branchName>
-		<jenkins.buildNumber>${BUILD_NUMBER}</jenkins.buildNumber>
+		<revision>1.0.0-SNAPSHOT</revision>
 	</properties>
 
 	<dependencies>
