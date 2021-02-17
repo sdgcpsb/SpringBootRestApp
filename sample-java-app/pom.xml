@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.buildpacks.example</groupId>
-	<artifactId>sample</artifactId>
+	<artifactId>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</artifactId>
 	<version>0.1.1-SNAPSHOT</version>
 	<!-- <version>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</version> -->
 	<name>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</name>
