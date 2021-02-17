@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>io.buildpacks.example</groupId>
 	<artifactId>sample</artifactId>
-	<!-- <version>EJB-build-branch</version> -->
-	<version>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</version>
-	<name>sample</name>
+	<version>0.1.1-SNAPSHOT</version>
+	<!-- <version>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</version> -->
+	<name>EJB-build-${BUILD_NUMBER}-branch-${env.GIT_BRANCH}</name>
 	<description>Sample Java Application</description>
 
 	<properties>
