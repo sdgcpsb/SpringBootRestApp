@@ -23,8 +23,10 @@ spec:
 	stages {
 		stage('Build & Unit Test') {
 			steps {
-				propfile = readProperties(file: './project.properties')
-				echo propfile['USERNAME']
+				script {
+					propfile = readProperties(file: './project.properties')
+					echo propfile['USERNAME']
+				}
 			}
 		}
 	}
