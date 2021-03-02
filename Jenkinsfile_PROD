@@ -20,26 +20,6 @@ spec:
 """
 		}
 	}
-	environment {
-		GRADLE_PATH = '/opt/gradle/gradle-3.5.1/bin'
-		GRADLE_TASK = 'ESBAuditClient ESBAuditLog ESBErrorTranslator TaxESB FraudESB FulfillmentESB PaymentESB ESBRadial ESBAutomatedQueueRetry AlertESB OrderReconESB'
-		DEPLOYMENT_ARCHIVE_DIR='/home/muleadmin/stage/archive'
-		DEPLOYMENT_STAGE_DIR='/home/muleadmin/stage'
-		DEPLOYMENT_DIR='/opt/mule/latest/webapps'
-		WAR_FILES='AlertESB.war FraudESB.war TaxESB.war PaymentESB.war FulfillmentESB.war ESBAuditLog.war ESBAutomatedQueueRetry.war OrderReconESB.war'
-		ESB_BIN_PATH='/opt/mule/bin/esb_service'
-		ESB_WAR_FOLDERS='PaymentESB ESBAuditLog OrderReconESB FraudESB TaxESB FulfillmentESB AlertESB ESBAutomatedQueueRetry'
-		REQUESTID='779'
-		STAGE_NAME='dev3'
-		WORKSOFT_URI='http://pwwsftapp01/executionmanager/api'
-		USERNAME='devopsengineering@signetjewelers.com'
-		USERNAME_FEATURE_DEPLOY='muleadmin'
-		HOSTS_FEATURE_DEPLOY="10.6.74.90"
-		USERNAME_DEV_DEPLOY='muleadmin'
-		HOSTS_DEV_DEPLOY="10.6.74.91, 10.6.74.92"
-		USERNAME_RELEASE='muleadmin'
-		HOSTS_RELEASE_DEPLOY="10.6.74.93, 10.6.74.94"
-	}
 	stages {
 		stage('Build & Unit Test') {
 			steps {
@@ -119,16 +99,16 @@ spec:
 					script {
 						withMaven(maven: 'MAVEN-3.6.3') {
 							if (propfile['feature_deploy'] == "true" ) {
-								USERNAME=env.USERNAME_FEATURE_DEPLOY
-								HOSTS=env.HOSTS_FEATURE_DEPLOY
+								propfile['USERNAME']=propfile['USERNAME_FEATURE_DEPLOY']
+								propfile['HOSTS']=propfile['HOSTS_FEATURE_DEPLOY']
 							}
 							if (env.GIT_BRANCH == 'dev' ) {
-								USERNAME=env.USERNAME_DEV_DEPLOY
-								HOSTS=env.HOSTS_DEV_DEPLOY
+								propfile['USERNAME']=propfile['USERNAME_DEV_DEPLOY']
+								propfile['HOSTS']=propfile['HOSTS_DEV_DEPLOY']
 							}
 							if (env.GIT_BRANCH == 'release') {
-								USERNAME=env.USERNAME_RELEASE_DEPLOY
-								HOSTS=env.HOSTS_RELEASE_DEPLOY
+								propfile['USERNAME']=propfile['USERNAME_RELEASE_DEPLOY']
+								propfile['HOSTS']=propfile['HOSTS_RELEASE_DEPLOY']
 							}
 								HOSTS.tokenize(',').each { HOSTNAME ->
 								echo "I am deploying the artifact into the target environment ${HOSTNAME} as user ${USERNAME}"
@@ -152,6 +132,7 @@ spec:
 								sh 'ssh ${USERNAME}@${HOSTNAME} "sleep 20"' 
 								*/
 								echo 'tomcat server started'
+								echo "propfile['USERNAME']"
 							}
 						}	
 					}
